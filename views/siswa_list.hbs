@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD POSTGRES</title>
+  <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-datepicker.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/datatables.min.css">
+
+  <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap-datepicker.min.js"></script>
+  <script type="text/javascript" src="/assets/js/datatables.min.js"></script>
+
+
+</head>
+
+<body>
+  <div class="container">
+
+<!-- nitifikasi================================================================================ -->
+<!-- alert untuk add dan update -->
+
+    {{#if messages.info}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong></strong> {{messages.info}}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+    </div>
+    {{/if}}
+<!-- --------------------------------------------------------------------------------------- -->    
+    <h1>List Siswa</h1>
+      <button class="btn btn-success" data-toggle="modal" data-target="#modalBiodata">Add New</button>
+    <table class="table table-stripped table-hover" id="bebas" >
+      <thead id="kepala">
+        <tr style="background-color: lightcyan">
+          <th>Nama Lengkap</th>
+          <th>Tanggal Lahir</th>
+          <th>Alamat</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results}}
+        <tr>
+          <td>{{nama_lengkap}}</td>     <!-- memanggil yang ada di data base -->
+          <td>{{tanggal_lahir}}</td>
+          <td>{{alamat}}</td>
+          <td>
+            <a href="javascript:void(0);" class="btn btn-sm btn-info edit" data-id="{{id}}"data-nama_lengkap="{{nama_lengkap}}" data-tanggal_lahir="{{tanggal_lahir}}" data-alamat="{{alamat}}">Edit</a>
+            <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" data-id="{{id}}">Delete</a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+<!-- Modal TAMBAH================================================================================ -->
+  <div class="modal fade" id="modalBiodata" tabindex="-1" role="dialog" aria-labelledby="formDataLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formDataLabel">Input Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action ="/save" method="post" id="formBiodata" onsubmit="return validateFormTambah()">
+
+        <div class="modal-body">     
+        <div class="form-group">
+<!--            <label for="email">Email address:</label>
+ -->          <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap"
+          placeholder="Nama Lengkap" style="background-color: lightcyan" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+        <!--    <label for="email">Email address:</label> -->
+            <input type="text" class="tanggal form-control" id="tanggal_lahir" name="tanggal_lahir" placeholder="Tanggal lahir" style="background-color: lightcyan" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <textarea style="background-color: lightcyan" class="form-control" name="alamat" placeholder="Alamat"autocomplete="off"></textarea>
+            
+          </div>
+        </div>
+<!-- Button trigger modal -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" class="fa fa-fwfa-send-o">Kirim</button>
+        </div>
+      </form>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================================================-->
+<!-- Tombol Edit Untuk Menampilin Pas diklik -->
+
+<div id="ModalEdit" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formDataLabel">Input Biodata</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    <form id="formEdit" action="/update" method="post">
+    
+        <div class="modal-body">
+          <input type="hidden" name="product_id_edit" id="product_id_edit"> 
+        <table class="table" style="background-color: turquoise">
+          <tr>
+            <td>Nama Lengkap</td>
+            <td>:</td>
+            <td>
+              <input type="text" id="nama_lengkap_edit" name="nama_lengkap_edit">
+            </td>
+          </tr>
+          <tr>
+            <td>Tanggal Lahir</td>
+            <td>:</td>
+            <td>
+              <input type="text"  class="tanggal" name="tanggal_lahir_edit" id="tanggal_lahir_edit">
+            </td>
+          <tr>
+            <td>Alamat</td>
+            <td>:</td>
+            <td>
+              <input type="text" name="alamat_edit" id="alamat_edit">
+            </td>
+          </tr>
+        </table>
+          </div>
+            <!-- Button trigger modal -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================================================= -->
+<!-- Munculin Pop Up Delete -->
+
+  <div class="modal fade" id="modal_delete">
+      <div class="modal-dialog">
+        <div class="modal-content" style="margin-top: 100px">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hedden="true">&times;</button>
+          </div>
+        <form action="/delete" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id_delete" id="id_delete">
+            <h4 class="modal-title" style="text-align: center;">Hapus Jangan Ragu</h4>
+            </div>
+          <div class="modal-footer" style="margin: 0px; border-top: 0px; text-align: center;">
+            <button class="btn btn-danger" id="delete_button">Delete</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>    
+  </div>
+</body>
+<!-- penutup tambahh================================================================================ -->
+<!-- JAVASCRIPT-->
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.tanggal').datepicker({
+        autoclose:true,
+        format: 'yyyy-mm-dd'    
+    });
+      $('#bebas').DataTable();
+  }); 
+
+/*========================================================================================*/
+//Java Script EDIT-------------------------------------------------------------------------
+$(document).on('click','.edit',function(){
+    var product_id    = $(this).data('id');     //dalam data sama dengan database
+    var nama_lengkap  = $(this).data('nama_lengkap');
+    var tanggal_lahir   = $(this).data('tanggal_lahir');
+    var alamat      = $(this).data('alamat');
+      $("#product_id_edit").val(product_id);      //var sesuai dengan variable
+      $("#nama_lengkap_edit").val(nama_lengkap);
+      $("#tanggal_lahir_edit").val(tanggal_lahir);  //#sesuai nama yang diatas(name)
+      $("#alamat_edit").val(alamat);  //#sesuai nama yang diatas(name)
+
+  $("#ModalEdit").modal("show");
+          
+});//penutup edit
+
+//=========================================================================================
+/*Java Script untuk tombol Delete*/
+
+  $(document).on('click','.delete',function(){
+    var id_delete_baru  = $(this).data('id');     //dalam data sama dengan database
+       $("#id_delete").val(id_delete_baru);     //var sesuai dengan variable
+
+  $("#modal_delete").modal("show");
+          
+});//penutup delete
+
+
+
+</script>
+</html>
